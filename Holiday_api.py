@@ -1,5 +1,5 @@
 import requests
-import pandas
+import pandas as pd
 from pprint import pprint
 myapi = "7b83d100d7e14c5fbc8705ffe33cbb8d"
 url = "https://holidays.abstractapi.com/v1/?"
@@ -16,6 +16,18 @@ print(response.status_code)
 print(response.content)
 holiday = response.json()
 pprint(holiday)
+csv_data= pd.DataFrame.from_records(holiday)
+pprint(csv_data)
+
+new = holiday[0].values()
+print("-------")
+for keys in holiday:
+    new=keys
+print(new)
+neew = list(new.values())
+print(neew)
+print(new.keys())
+
 # for i in range(day_start,day_end+1):
 #     response = requests.get(f"{url}api_key={myapi}&country={country}&year={year}&month={month}&day={day_start}")
 #     day_start += 1
