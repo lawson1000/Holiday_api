@@ -1,0 +1,25 @@
+,Country Info,Holiday Info
+1,name,New Year's Eve
+2,name_local,
+3,language,
+4,description,
+5,country,NG
+6,location,Nigeria
+7,type,Observance
+8,date,12/31/2023
+9,date_year,2023
+10,date_month,12
+11,date_day,31
+12,week_day,Sunday
+name,New Year's Day
+name_local,
+language,
+description,
+country,NG
+location,Nigeria
+type,National
+date,01/01/2023
+date_year,2023
+date_month,01
+date_day,01
+week_day,Sunday
