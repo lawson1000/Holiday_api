@@ -2,32 +2,28 @@ import requests
 import pandas as pd
 import time
 
-my_api = "7b83d100d7e14c5fbc8705ffe33cbb8d"
+my_api = "6531c94a2ea942628f5523ceb31fa583"
 url = "https://holidays.abstractapi.com/v1/?"
 
-
 count = 0
-while count < 2:
-
-    country = input("which country: ").upper()
+country_list = []
+while count < 4:
+    country = input("which country: ").upper().strip()
     while country.isalpha() is not True or len(country) != 2:
         print("Invalid Input\n")
-        country = input("Enter a valid alpha 2 Country Code: ").upper()
+        country = input("Enter a valid alpha 2 Country Code: ").upper().strip()
 
     while country.isalpha() is True:
-
         try:
-            # time.sleep(1)
-            # print(requests.get(f"{url}api_key={my_api}&country={country}&year=2022&month=12&day=1").json())
             time.sleep(1)
-            res = requests.get(f"{url}api_key={my_api}&country={country}&year=2022&month=12&day=1")
+            res = requests.get(f"{url}api_key={my_api}&country={country}&year=2022&month=1&day=1")
             test = res.json()
             if type(test) is dict:
                 print(f"No country uses {country}  ")
-                country = input("Enter a valid alpha 2 Country Code: ").upper()
+                country = input("Enter a valid alpha 2 Country Code: ").upper().strip()
                 while country.isalpha() is not True or len(country) != 2:
                     print("Invalid Input\n")
-                    country = input("Enter a valid alpha 2 Country Code: ").upper()
+                    country = input("Enter a valid alpha 2 Country Code: ").upper().strip()
                 continue
             elif type(test) is list:
                 break
@@ -37,18 +33,18 @@ while count < 2:
             break
         except ValueError:
             print("Enter a Valid Country Code")
-            country = input("Enter a valid alpha 2 Country Code: ").upper()
+            country = input("Enter a valid alpha 2 Country Code: ").upper().strip()
         except ConnectionError:
             print("please Check Your Connection")
         except Exception:
             print("Please Check Your Internet and Try again")
-            country = input("which Country: ").upper()
+            country = input("which Country: ").upper().strip()
         break
     while True:
         try:
             year = int(input("Year: "))
-            if year < 1800 or year > 19999:
-                print("Invalid! Please Enter between the range of 1800 - 9999\n")
+            if year < 1800 or year > 2050:
+                print("Invalid! Please Enter between the range of 1800 - 2050\n")
                 continue
             break
         except ValueError:
@@ -62,7 +58,7 @@ while count < 2:
                 continue
             break
         except ValueError:
-            print("Invalid! Enter a Numeric value")
+            print("Invalid! Enter a Numeric/Integer value")
 
     while True:
         try:
@@ -90,9 +86,8 @@ while count < 2:
             print("Invalid! Enter a Numeric value")
 
     while True:
-        day_end = int(input("To which day?: "))
         try:
-            # day_end = int(input("To which day?: "))
+            day_end = int(input("To which day?: "))
             day_end_error = f"Invalid! {month}/{year} do not have day {day_end} \nEnter a valid day\n"
             if day_end < day_start:
                 print("The End date must be greater or equal to the starting Date")
@@ -117,47 +112,54 @@ while count < 2:
             break
         except ValueError:
             print("Invalid! Enter a Numeric value")
+        except ConnectionError:
+            print("please Check Your Connection")
+        except Exception:
+            print("Please Check Your Internet and Try again")
 
-    run = True
-    while run:
+    try:
         for i in range(day_start, day_end + 1):
-            response = requests.get(f"{url}api_key={my_api}&country={country}"
-                                    f"&year={year}&month={month}&day={day_start}")
-            holiday = response.json()
-            # pairs = []
-            # for kp in holiday:
-            #     pairs = kp
             try:
+                response = requests.get(f"{url}api_key={my_api}&country={country}"
+                                        f"&year={year}&month={month}&day={day_start}")
+                holiday = response.json()
+
                 if holiday:
-                    # pair_value = list(pairs.values())
-                    # pair_keys = list(pairs.keys())
                     holiday_csv = pd.DataFrame(holiday)
 
-                    # holiday_csv = pd.DataFrame({
-                    #     'Country Info': pair_keys,
-                    #     'Holiday Info': pair_value
-                    # })
                     holiday_csv_space = pd.DataFrame({
                         "a": [''],
                         "b": ['']
                     })
                     holiday_csv.index = holiday_csv.index + 1
                     print(holiday_csv)
-                    if count < 1:
+
+                    if country in country_list:
                         holiday_csv.to_csv(f'{country}_holiday_csv_file.csv', mode="a", index=False, header=False)
-                        holiday_csv_space.to_csv(f'{country}_holiday_csv_file.csv', sep=" ", mode="a", index=False,
-                                                 header=False)
-                        day_start += 1
-                        time.sleep(1)
-                        print("------Executed-----")
+                        holiday_csv_space.to_csv(f'{country}_holiday_csv_file.csv'
+                                                 f'', sep=" ", mode="a", index=False, header=False)
+                    else:
+                        holiday_csv.to_csv(f'{country}_holiday_csv_file.csv', mode="a", index=False)
+                        holiday_csv_space.to_csv(f'{country}_holiday_csv_file.csv'
+                                                 f'', sep=" ", mode="a", index=False, header=False)
+                    country_list.append(country)
+                    day_start += 1
+                    time.sleep(1)
+                    print("------Executed-----")
 
                 else:
                     print(f"There is no holiday on {month}/{day_start}/{year}")
                     day_start += 1
                     time.sleep(1)
-                    continue
-            except ValueError:
-                print("You must have inserted an invalid information")
-            run = False
-        count += 1
+
+            except Exception:
+                print("An Error occur. Here are few things you can do")
+                print("Please Check your Internet and try again")
+                print("Please Close the Csv file and try again")
+                quit()
+
+    except Exception:
+        print("Please Check your Internet and try again")
+        quit()
+    count += 1
 print("------Successfully executed-----")
